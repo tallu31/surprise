@@ -1,0 +1,654 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ayesha — Meri Hayat ❤️</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Noto+Nastaliq+Urdu:wght@400;700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+--rose: #fb7185;
+--pink: #f472b6;
+--purple: #c084fc;
+--gold: #fbbf24;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+font-family: 'Poppins', sans-serif;
+background: linear-gradient(135deg, #1a0a1e 0%, #2d1b3d 40%, #1a0a2e 100%);
+min-height: 100vh;
+overflow-x: hidden;
+color: #fff;
+}
+.urdu { font-family: 'Noto Nastaliq Urdu', serif; direction: rtl; }
+.script { font-family: 'Great Vibes', cursive; }
+.page {
+display: none;
+min-height: 100vh;
+padding: 80px 20px 40px;
+animation: fadeIn 0.7s ease;
+}
+.page.active { display: block; }
+@keyframes fadeIn {
+from { opacity: 0; transform: translateY(20px); }
+to { opacity: 1; transform: translateY(0); }
+}
+/* Floating hearts */
+.hearts-bg { position: fixed; inset: 0; pointer-events: none; overflow: hidden; z-index: 0; }
+.floating-heart {
+position: absolute;
+font-size: 20px;
+opacity: 0.15;
+animation: floatUp linear infinite;
+}
+@keyframes floatUp {
+0% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
+10% { opacity: 0.2; }
+90% { opacity: 0.15; }
+100% { transform: translateY(-10vh) rotate(360deg); opacity: 0; }
+}
+/* Nav */
+nav {
+position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+background: rgba(26, 10, 30, 0.85);
+backdrop-filter: blur(16px);
+border-bottom: 1px solid rgba(251, 113, 133, 0.2);
+}
+.nav-btn {
+transition: all 0.3s ease;
+position: relative;
+}
+.nav-btn.active {
+color: #fb7185;
+}
+.nav-btn.active::after {
+content: '';
+position: absolute; bottom: -2px; left: 20%; right: 20%;
+height: 2px; background: linear-gradient(90deg, #fb7185, #c084fc);
+border-radius: 2px;
+}
+.nav-btn:hover { color: #f9a8d4; }
+/* Glow text */
+.glow-text {
+text-shadow: 0 0 20px rgba(251, 113, 133, 0.6), 0 0 40px rgba(192, 132, 252, 0.3);
+}
+.glow-box {
+box-shadow: 0 0 40px rgba(251, 113, 133, 0.25), 0 0 80px rgba(192, 132, 252, 0.15);
+}
+/* Candles */
+.candle-container {
+display: flex; justify-content: center; align-items: flex-end;
+gap: 28px; flex-wrap: wrap; padding: 40px 10px;
+}
+.candle-wrap {
+display: flex; flex-direction: column; align-items: center;
+cursor: pointer; transition: transform 0.3s;
+}
+.candle-wrap:hover { transform: scale(1.05); }
+.candle {
+width: 28px; height: 90px;
+background: linear-gradient(180deg, #fef3c7 0%, #fde68a 30%, #f59e0b 100%);
+border-radius: 4px 4px 2px 2px;
+position: relative;
+box-shadow: 0 4px 15px rgba(245, 158, 11, 0.4);
+}
+.candle::before {
+content: '';
+position: absolute; top: -8px; left: 50%; transform: translateX(-50%);
+width: 4px; height: 12px;
+background: #78716c;
+border-radius: 2px;
+}
+.candle-base {
+width: 40px; height: 12px;
+background: linear-gradient(180deg, #92400e, #78350f);
+border-radius: 0 0 6px 6px;
+margin-top: -2px;
+}
+.flame {
+position: absolute; top: -36px; left: 50%; transform: translateX(-50%);
+width: 18px; height: 28px;
+background: radial-gradient(circle at 50% 80%, #fbbf24, #f97316 40%, #ef4444 70%, transparent 100%);
+border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+opacity: 0;
+transition: opacity 0.4s;
+filter: blur(0.5px);
+}
+.flame.lit {
+opacity: 1;
+animation: flicker 0.8s ease-in-out infinite alternate;
+box-shadow: 0 0 20px 8px rgba(251, 191, 36, 0.6), 0 0 40px 15px rgba(249, 115, 22, 0.3);
+}
+.flame::before {
+content: '';
+position: absolute; top: 6px; left: 50%; transform: translateX(-50%);
+width: 8px; height: 12px;
+background: radial-gradient(circle, #fef9c3, #fbbf24);
+border-radius: 50%;
+opacity: 0.9;
+}
+@keyframes flicker {
+0% { transform: translateX(-50%) scale(1) rotate(-2deg); }
+50% { transform: translateX(-50%) scale(1.08) rotate(2deg); }
+100% { transform: translateX(-50%) scale(0.95) rotate(-1deg); }
+}
+.candle-glow {
+position: absolute; top: -50px; left: 50%; transform: translateX(-50%);
+width: 80px; height: 80px;
+background: radial-gradient(circle, rgba(251, 191, 36, 0.35), transparent 70%);
+opacity: 0; pointer-events: none;
+transition: opacity 0.5s;
+border-radius: 50%;
+}
+.candle-glow.lit { opacity: 1; animation: glowPulse 2s ease-in-out infinite; }
+@keyframes glowPulse {
+0%, 100% { transform: translateX(-50%) scale(1); opacity: 0.5; }
+50% { transform: translateX(-50%) scale(1.3); opacity: 0.8; }
+}
+/* Card styles */
+.love-card {
+background: rgba(255, 255, 255, 0.06);
+border: 1px solid rgba(251, 113, 133, 0.25);
+border-radius: 24px;
+backdrop-filter: blur(12px);
+transition: all 0.4s ease;
+}
+.love-card:hover {
+border-color: rgba(251, 113, 133, 0.5);
+transform: translateY(-4px);
+box-shadow: 0 20px 60px rgba(251, 113, 133, 0.15);
+}
+/* Buttons */
+.btn-glow {
+background: linear-gradient(135deg, #fb7185, #c084fc);
+border: none; color: white; font-weight: 600;
+padding: 14px 36px; border-radius: 50px;
+cursor: pointer; transition: all 0.3s;
+box-shadow: 0 4px 20px rgba(251, 113, 133, 0.4);
+position: relative; overflow: hidden;
+}
+.btn-glow:hover {
+transform: translateY(-2px) scale(1.03);
+box-shadow: 0 8px 30px rgba(251, 113, 133, 0.55);
+}
+.btn-glow:active { transform: scale(0.98); }
+.btn-outline {
+background: transparent;
+border: 2px solid rgba(251, 113, 133, 0.5);
+color: #fda4af; font-weight: 500;
+padding: 12px 28px; border-radius: 50px;
+cursor: pointer; transition: all 0.3s;
+}
+.btn-outline:hover {
+background: rgba(251, 113, 133, 0.15);
+border-color: #fb7185; color: #fff;
+}
+/* Shayari card */
+.shayari-card {
+background: linear-gradient(145deg, rgba(255,255,255,0.08), rgba(251,113,133,0.06));
+border: 1px solid rgba(251, 113, 133, 0.3);
+border-radius: 28px;
+padding: 40px 30px;
+backdrop-filter: blur(16px);
+position: relative;
+overflow: hidden;
+}
+.shayari-card::before {
+content: '❝';
+position: absolute; top: 10px; left: 20px;
+font-size: 80px; opacity: 0.08; font-family: Georgia, serif;
+}
+/* Sprinkle particles */
+.sprinkle {
+position: fixed; pointer-events: none; z-index: 999;
+font-size: 18px; animation: sprinkleFall 2.5s ease-in forwards;
+}
+@keyframes sprinkleFall {
+0% { transform: translateY(0) rotate(0deg) scale(1); opacity: 1; }
+100% { transform: translateY(100vh) rotate(720deg) scale(0.3); opacity: 0; }
+}
+/* Pulse ring */
+.pulse-ring {
+position: absolute; inset: -4px;
+border-radius: 50%;
+border: 2px solid rgba(251, 113, 133, 0.4);
+animation: pulseRing 2s ease-out infinite;
+}
+@keyframes pulseRing {
+0% { transform: scale(1); opacity: 0.6; }
+100% { transform: scale(1.5); opacity: 0; }
+}
+/* Gift box */
+.gift-box {
+width: 120px; height: 100px; margin: 0 auto;
+position: relative; cursor: pointer;
+transition: transform 0.4s;
+}
+.gift-box:hover { transform: scale(1.08); }
+.gift-body {
+width: 120px; height: 80px;
+background: linear-gradient(135deg, #fb7185, #e11d48);
+border-radius: 8px; position: absolute; bottom: 0;
+box-shadow: 0 10px 30px rgba(225, 29, 72, 0.4);
+}
+.gift-lid {
+width: 130px; height: 30px;
+background: linear-gradient(135deg, #fda4af, #fb7185);
+border-radius: 6px; position: absolute; top: 0; left: -5px;
+transition: all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+transform-origin: bottom center;
+box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+}
+.gift-box.open .gift-lid {
+transform: rotateX(-110deg) translateY(-20px);
+opacity: 0.7;
+}
+.gift-ribbon-v {
+position: absolute; top: 0; left: 50%; transform: translateX(-50%);
+width: 16px; height: 100%;
+background: linear-gradient(180deg, #fbbf24, #f59e0b);
+z-index: 2;
+}
+.gift-ribbon-h {
+position: absolute; top: 35px; left: 0;
+width: 100%; height: 16px;
+background: linear-gradient(90deg, #fbbf24, #f59e0b);
+z-index: 2;
+}
+.gift-bow {
+position: absolute; top: -18px; left: 50%; transform: translateX(-50%);
+font-size: 36px; z-index: 3;
+}
+/* Stars twinkle */
+.twinkle {
+position: absolute; width: 3px; height: 3px;
+background: white; border-radius: 50%;
+animation: twinkle 2s ease-in-out infinite;
+}
+@keyframes twinkle {
+0%, 100% { opacity: 0.2; transform: scale(1); }
+50% { opacity: 1; transform: scale(1.5); }
+}
+/* Responsive */
+@media (max-width: 640px) {
+.candle { width: 22px; height: 70px; }
+.candle-container { gap: 16px; }
+.nav-label { display: none; }
+.shayari-card { padding: 28px 18px; }
+}
+.page-content { position: relative; z-index: 1; max-width: 900px; margin: 0 auto; }
+</style>
+</head>
+<body>
+<!-- Floating hearts background -->
+<div class="hearts-bg" id="heartsBg"></div>
+<!-- Twinkling stars -->
+<div class="hearts-bg" id="starsBg"></div>
+<!-- Navigation -->
+<nav class="px-4 py-3">
+<div class="max-w-3xl mx-auto flex items-center justify-between">
+<div class="script text-2xl text-rose-400 glow-text">A ❤️ T</div>
+<div class="flex gap-1 sm:gap-3">
+<button onclick="showPage(1)" class="nav-btn active px-3 py-2 text-sm rounded-full text-rose-200/70" id="nav1">
+<span>🏠</span> <span class="nav-label ml-1">Home</span>
+</button>
+<button onclick="showPage(2)" class="nav-btn px-3 py-2 text-sm rounded-full text-rose-200/70" id="nav2">
+<span>🕯️</span> <span class="nav-label ml-1">Candles</span>
+</button>
+<button onclick="showPage(3)" class="nav-btn px-3 py-2 text-sm rounded-full text-rose-200/70" id="nav3">
+<span>✨</span> <span class="nav-label ml-1">Surprise</span>
+</button>
+<button onclick="showPage(4)" class="nav-btn px-3 py-2 text-sm rounded-full text-rose-200/70" id="nav4">
+<span>💌</span> <span class="nav-label ml-1">Shayari</span>
+</button>
+</div>
+</div>
+</nav>
+<!-- ========== PAGE 1: Home ========== -->
+<div id="page1" class="page active">
+<div class="page-content text-center">
+<div class="mb-6 inline-block relative">
+<div class="w-28 h-28 mx-auto rounded-full bg-gradient-to-br from-rose-400 to-purple-500 flex items-center justify-center text-5xl shadow-lg glow-box relative">
+❤️
+<div class="pulse-ring"></div>
+</div>
+</div>
+<p class="text-rose-300/80 text-sm tracking-[4px] uppercase mb-3 font-light">A Surprise Just For You</p>
+<h1 class="script text-6xl sm:text-7xl md:text-8xl glow-text mb-2" style="background: linear-gradient(135deg, #fb7185, #f9a8d4, #c084fc); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+Ayesha
+</h1>
+<p class="urdu text-3xl sm:text-4xl text-rose-200 mb-2 leading-relaxed">میری حیات</p>
+<p class="text-purple-300/70 text-lg mb-8 font-light italic">Meri Hayat — My Entire Life</p>
+<div class="love-card max-w-lg mx-auto p-8 mb-10">
+<p class="text-rose-100/90 leading-relaxed text-base sm:text-lg mb-4">
+Every heartbeat of mine whispers your name.<br>
+This little corner of the internet was made<br>
+with all my love, just for you.
+</p>
+<div class="w-16 h-0.5 bg-gradient-to-r from-transparent via-rose-400 to-transparent mx-auto my-5"></div>
+<p class="script text-3xl text-rose-300">From your Talha</p>
+<p class="text-purple-300/60 text-sm mt-1">with endless love 💕</p>
+</div>
+<div class="flex flex-col sm:flex-row gap-4 justify-center items-center">
+<button onclick="showPage(2)" class="btn-glow text-base">
+🕯️ Light the Candles
+</button>
+<button onclick="showPage(3)" class="btn-outline text-base">
+✨ Open Surprise
+</button>
+</div>
+<div class="mt-16 flex justify-center gap-6 text-2xl opacity-40">
+<span class="animate-bounce" style="animation-delay:0s">🌸</span>
+<span class="animate-bounce" style="animation-delay:0.2s">💗</span>
+<span class="animate-bounce" style="animation-delay:0.4s">✨</span>
+<span class="animate-bounce" style="animation-delay:0.6s">🌹</span>
+<span class="animate-bounce" style="animation-delay:0.8s">💖</span>
+</div>
+</div>
+</div>
+<!-- ========== PAGE 2: Candles ========== -->
+<div id="page2" class="page">
+<div class="page-content text-center">
+<p class="text-rose-300/70 text-sm tracking-[3px] uppercase mb-2">For Our Love</p>
+<h2 class="script text-5xl sm:text-6xl glow-text mb-3 text-rose-300">Glowing Candles</h2>
+<p class="urdu text-xl text-purple-200/80 mb-2">محبت کے چراغ</p>
+<p class="text-rose-100/60 max-w-md mx-auto mb-8 text-sm leading-relaxed">
+Tap each candle to light it. Watch them glow for us — warm, eternal, and beautiful. Just like what I feel for you, Ayesha.
+</p>
+<div class="candle-container mb-8" id="candlesArea">
+<!-- Candles generated by JS -->
+</div>
+<p class="text-rose-300/50 text-sm mb-6" id="candleMsg">Tap the candles to light them ✨</p>
+<div class="flex flex-col sm:flex-row gap-3 justify-center">
+<button onclick="lightAllCandles()" class="btn-glow text-sm">🔥 Light All Candles</button>
+<button onclick="blowOutCandles()" class="btn-outline text-sm">💨 Blow Out</button>
+</div>
+<div class="love-card max-w-md mx-auto p-6 mt-12">
+<p class="urdu text-lg text-rose-100 leading-loose mb-3">
+جب تک یہ چراغ جلتے رہیں<br>
+میری دعا ہے تمہارے ساتھ
+</p>
+<p class="text-purple-300/50 text-xs italic">As long as these candles burn, my prayers stay with you</p>
+</div>
+<div class="mt-8">
+<button onclick="showPage(3)" class="btn-outline text-sm">Next: Surprise →</button>
+</div>
+</div>
+</div>
+<!-- ========== PAGE 3: Surprise Sprinkles ========== -->
+<div id="page3" class="page">
+<div class="page-content text-center">
+<p class="text-rose-300/70 text-sm tracking-[3px] uppercase mb-2">Something Special</p>
+<h2 class="script text-5xl sm:text-6xl glow-text mb-3 text-rose-300">Surprise!</h2>
+<p class="urdu text-xl text-purple-200/80 mb-8">ایک پیارا سا سرپرائز</p>
+<!-- Gift Box -->
+<div class="mb-10">
+<div class="gift-box" id="giftBox" onclick="openGift()">
+<div class="gift-lid">
+<div class="gift-bow">🎀</div>
+</div>
+<div class="gift-body">
+<div class="gift-ribbon-v"></div>
+<div class="gift-ribbon-h"></div>
+</div>
+</div>
+<p class="text-rose-200/50 text-sm mt-6" id="giftHint">Click the gift to open 🎁</p>
+</div>
+<!-- Surprise content (hidden initially) -->
+<div id="surpriseContent" class="hidden">
+<div class="love-card max-w-lg mx-auto p-8 mb-8">
+<div class="text-5xl mb-4">💖✨🌸</div>
+<h3 class="script text-4xl text-rose-300 mb-4">Ayesha, you are my forever</h3>
+<p class="text-rose-100/80 leading-relaxed mb-4">
+I made this entire website just to see you smile.
+You are not just my love — you are my peace,
+my chaos, my home, and my favourite person
+in the whole universe.
+</p>
+<div class="w-12 h-0.5 bg-rose-400/40 mx-auto my-4"></div>
+<p class="urdu text-xl text-purple-200 leading-loose">
+تم میری خوشی ہو، میری سکون ہو<br>
+تم میری حیات ہو آئشہ
+</p>
+</div>
+<div class="flex flex-col sm:flex-row gap-3 justify-center mb-6">
+<button onclick="triggerSprinkles()" class="btn-glow text-sm">🎊 More Sprinkles!</button>
+<button onclick="triggerConfetti()" class="btn-outline text-sm">💫 Confetti Blast</button>
+</div>
+</div>
+<div class="mt-6">
+<button onclick="showPage(4)" class="btn-outline text-sm">Next: Shayari & Blessings →</button>
+</div>
+</div>
+</div>
+<!-- ========== PAGE 4: Shayari ========== -->
+<div id="page4" class="page">
+<div class="page-content text-center">
+<p class="text-rose-300/70 text-sm tracking-[3px] uppercase mb-2">From the Heart</p>
+<h2 class="script text-5xl sm:text-6xl glow-text mb-2 text-rose-300">Shayari & Dua</h2>
+<p class="text-purple-300/60 text-sm mb-10 italic">Poetry & Blessings for my Ayesha</p>
+<!-- Shayari 1 -->
+<div class="shayari-card max-w-lg mx-auto mb-6 text-right">
+<p class="urdu text-2xl sm:text-3xl text-rose-100 leading-loose mb-4">
+آئشہ تم میری حیات ہو<br>
+تمہارے بغیر ادھوری یہ بات ہو<br>
+تمہاری مسکراہٹ میں چھپی ہے دنیا<br>
+تمہارے پیار میں بسی ہے میری کائنات ہو
+</p>
+<div class="w-16 h-0.5 bg-gradient-to-l from-rose-400 to-transparent mr-0 ml-auto mb-3"></div>
+<p class="text-purple-300/50 text-xs text-left italic">Ayesha you are my life — without you everything is incomplete. Your smile holds my world, your love holds my universe.</p>
+</div>
+<!-- Shayari 2 -->
+<div class="shayari-card max-w-lg mx-auto mb-6 text-right">
+<p class="urdu text-2xl sm:text-3xl text-rose-100 leading-loose mb-4">
+دل کی ہر دھڑکن پہ لکھا ہے نام تیرا<br>
+روح کی گہرائیوں میں بسا ہے پیغام تیرا<br>
+یہ دنیا کیا چیز ہے جب پاس ہو تم<br>
+تم ہو تو جنت ہے، تمہارے بغیر حرام تیرا
+</p>
+<div class="w-16 h-0.5 bg-gradient-to-l from-purple-400 to-transparent mr-0 ml-auto mb-3"></div>
+<p class="text-purple-300/50 text-xs text-left italic">Your name is written on every heartbeat. With you near, this world becomes heaven.</p>
+</div>
+<!-- Blessings -->
+<div class="love-card max-w-lg mx-auto p-8 mb-6">
+<div class="text-3xl mb-4">🤲✨</div>
+<h3 class="script text-3xl text-amber-300 mb-5">Dua & Blessings</h3>
+<div class="space-y-4 text-right">
+<p class="urdu text-xl text-rose-100 leading-loose">
+اللہ تمہیں ہمیشہ خوش رکھے<br>
+تمہاری زندگی میں صرف پیار اور سکون ہو<br>
+ہر دعائیں قبول ہوں تمہاری<br>
+اور ہمیشہ مسکراتے رہو میری حیات
+</p>
+</div>
+<div class="w-20 h-0.5 bg-gradient-to-r from-transparent via-amber-400/50 to-transparent mx-auto my-5"></div>
+<p class="text-amber-200/60 text-sm leading-relaxed">
+May Allah keep you forever happy.<br>
+May your life be filled only with love & peace.<br>
+May every prayer of yours be accepted.<br>
+And may you always keep smiling — my Hayat.
+</p>
+</div>
+<!-- Final message -->
+<div class="love-card max-w-lg mx-auto p-8 glow-box">
+<p class="text-rose-200/70 text-sm mb-3 tracking-wider uppercase">Forever Yours</p>
+<p class="script text-4xl sm:text-5xl text-rose-300 mb-3">I Love You, Ayesha</p>
+<p class="urdu text-2xl text-purple-200 mb-4">میں تم سے محبت کرتا ہوں</p>
+<div class="flex justify-center gap-2 text-2xl mb-4">
+<span>🌹</span><span>💕</span><span>🌹</span>
+</div>
+<p class="script text-2xl text-rose-400">— Your Talha</p>
+<p class="text-purple-400/40 text-xs mt-2">Made with pure love, just for you</p>
+</div>
+<div class="mt-10 flex justify-center gap-4">
+<button onclick="triggerConfetti(); triggerSprinkles();" class="btn-glow text-sm">💖 Celebrate Love</button>
+<button onclick="showPage(1)" class="btn-outline text-sm">🏠 Back Home</button>
+</div>
+<p class="text-rose-300/20 text-xs mt-12">Ayesha × Talha — Forever ❤️</p>
+</div>
+</div>
+<script>
+// ===== Floating Hearts =====
+const heartsBg = document.getElementById('heartsBg');
+const heartEmojis = ['❤️','💕','💗','💖','🌸','✨','🌹','💘'];
+for (let i = 0; i < 18; i++) {
+const h = document.createElement('div');
+h.className = 'floating-heart';
+h.textContent = heartEmojis[Math.floor(Math.random() * heartEmojis.length)];
+h.style.left = Math.random() * 100 + '%';
+h.style.animationDuration = (8 + Math.random() * 12) + 's';
+h.style.animationDelay = (Math.random() * 10) + 's';
+h.style.fontSize = (14 + Math.random() * 18) + 'px';
+heartsBg.appendChild(h);
+}
+// ===== Twinkling Stars =====
+const starsBg = document.getElementById('starsBg');
+for (let i = 0; i < 40; i++) {
+const s = document.createElement('div');
+s.className = 'twinkle';
+s.style.left = Math.random() * 100 + '%';
+s.style.top = Math.random() * 100 + '%';
+s.style.animationDelay = Math.random() * 2 + 's';
+s.style.animationDuration = (1.5 + Math.random() * 2) + 's';
+starsBg.appendChild(s);
+}
+// ===== Page Navigation =====
+function showPage(n) {
+document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+document.getElementById('page' + n).classList.add('active');
+document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+document.getElementById('nav' + n).classList.add('active');
+window.scrollTo({ top: 0, behavior: 'smooth' });
+if (n === 4) setTimeout(() => { triggerConfetti(); }, 600);
+}
+// ===== Candles =====
+const candleCount = 7;
+const candlesArea = document.getElementById('candlesArea');
+let litCount = 0;
+for (let i = 0; i < candleCount; i++) {
+const wrap = document.createElement('div');
+wrap.className = 'candle-wrap';
+wrap.innerHTML = `
+<div style="position:relative">
+<div class="candle-glow" id="glow${i}"></div>
+<div class="flame" id="flame${i}"></div>
+<div class="candle"></div>
+</div>
+<div class="candle-base"></div>
+`;
+wrap.addEventListener('click', () => toggleCandle(i));
+candlesArea.appendChild(wrap);
+}
+function toggleCandle(i) {
+const flame = document.getElementById('flame' + i);
+const glow = document.getElementById('glow' + i);
+if (flame.classList.contains('lit')) {
+flame.classList.remove('lit');
+glow.classList.remove('lit');
+litCount = Math.max(0, litCount - 1);
+} else {
+flame.classList.add('lit');
+glow.classList.add('lit');
+litCount++;
+createSparkle(flame);
+}
+updateCandleMsg();
+}
+function lightAllCandles() {
+for (let i = 0; i < candleCount; i++) {
+const flame = document.getElementById('flame' + i);
+const glow = document.getElementById('glow' + i);
+if (!flame.classList.contains('lit')) {
+setTimeout(() => {
+flame.classList.add('lit');
+glow.classList.add('lit');
+createSparkle(flame);
+}, i * 150);
+}
+}
+litCount = candleCount;
+setTimeout(updateCandleMsg, candleCount * 150 + 100);
+}
+function blowOutCandles() {
+for (let i = 0; i < candleCount; i++) {
+document.getElementById('flame' + i).classList.remove('lit');
+document.getElementById('glow' + i).classList.remove('lit');
+}
+litCount = 0;
+updateCandleMsg();
+}
+function updateCandleMsg() {
+const msg = document.getElementById('candleMsg');
+if (litCount === 0) msg.textContent = 'Tap the candles to light them ✨';
+else if (litCount < candleCount) msg.textContent = `${litCount} of ${candleCount} candles glowing for you 💕`;
+else msg.textContent = 'All candles lit — our love shines forever 🔥💖';
+}
+function createSparkle(el) {
+const rect = el.getBoundingClientRect();
+for (let i = 0; i < 5; i++) {
+const sp = document.createElement('div');
+sp.textContent = '✨';
+sp.style.cssText = `position:fixed;left:${rect.left + rect.width/2}px;top:${rect.top}px;font-size:12px;pointer-events:none;z-index:999;transition:all 0.8s ease-out;`;
+document.body.appendChild(sp);
+requestAnimationFrame(() => {
+sp.style.transform = `translate(${(Math.random()-0.5)*60}px, ${-30-Math.random()*40}px) scale(0)`;
+sp.style.opacity = '0';
+});
+setTimeout(() => sp.remove(), 900);
+}
+}
+// ===== Gift Box =====
+let giftOpened = false;
+function openGift() {
+if (giftOpened) return;
+giftOpened = true;
+document.getElementById('giftBox').classList.add('open');
+document.getElementById('giftHint').textContent = '';
+setTimeout(() => {
+document.getElementById('surpriseContent').classList.remove('hidden');
+document.getElementById('surpriseContent').style.animation = 'fadeIn 0.8s ease';
+triggerConfetti();
+triggerSprinkles();
+}, 500);
+}
+// ===== Confetti =====
+function triggerConfetti() {
+const colors = ['#fb7185', '#c084fc', '#fbbf24', '#f472b6', '#e879f9', '#fda4af'];
+confetti({
+particleCount: 120,
+spread: 80,
+origin: { y: 0.6 },
+colors: colors,
+disableForReducedMotion: true
+});
+setTimeout(() => {
+confetti({ particleCount: 60, angle: 60, spread: 55, origin: { x: 0, y: 0.7 }, colors });
+confetti({ particleCount: 60, angle: 120, spread: 55, origin: { x: 1, y: 0.7 }, colors });
+}, 250);
+}
+// ===== Sprinkles =====
+function triggerSprinkles() {
+const emojis = ['💕','✨','🌸','💖','⭐','🌹','💗','🎀','💫','🥰','💘','🌺'];
+for (let i = 0; i < 35; i++) {
+setTimeout(() => {
+const s = document.createElement('div');
+s.className = 'sprinkle';
+s.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+s.style.left = Math.random() * 100 + 'vw';
+s.style.top = '-20px';
+s.style.fontSize = (14 + Math.random() * 16) + 'px';
+s.style.animationDuration = (1.8 + Math.random() * 1.5) + 's';
+document.body.appendChild(s);
+setTimeout(() => s.remove(), 3000);
+}, i * 50);
+}
+}
+// Soft auto confetti on first load
+setTimeout(() => {
+confetti({ particleCount: 40, spread: 50, origin: { y: 0.7 }, colors: ['#fb7185','#c084fc','#fbbf24'] });
+}, 1000);
+</script>
+</body>
+</html>
